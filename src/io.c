@@ -3,7 +3,8 @@
 static IOFunctionEntry io_functions[] = {
     { .name = "io:read", .function = io_read },
     { .name = "io:write", .function = io_write },
-    { .name = "io:print", .function = io_print }
+    { .name = "io:print", .function = io_print },
+    { .name = "io:scan", .function = io_scan }
 };
 
 LimeValue lime_module_initialize(LimeStack stack, LimeValue library) {
@@ -112,6 +113,54 @@ LimeValue io_print(LimeStack stack) {
     }
 
     fflush(stdout);
+
+    return NULL;
+}
+
+LimeValue io_scan(LimeStack stack) {
+    LimeStackFrame frame = LIME_ALLOCATE_STACK_FRAME(stack, NULL, NULL, NULL);
+    u8 buffer[4096];
+    register u64 length;
+    register bool stop = false;
+
+    do {
+        char *const result = fgets((char *) &buffer[0], sizeof(buffer) / sizeof(buffer[0]), stdin);
+
+        if (result == NULL) {
+            if (feof(stdin)) {
+                buffer[0] = '\0';
+                stop = true;
+                length = 0;
+            } else {
+                return lime_format_exception(&frame, "io exception in function '%s'", __FUNCTION__).value;
+            }
+        } else {
+            length = strlen((char *) &buffer[0]);
+            if (feof(stdin)) {
+                stop = true;
+            } else if (buffer[length - 1] == '\n') {
+                // remove the new line character
+                buffer[--length] = '\0';
+                stop = true;
+            }
+        }
+
+        if (frame.registers[0] == NULL) {
+            // create the initial string (in most cases this is most probably sufficient)
+            LIME_TRY(&frame.registers[0], lime_string(&frame, &buffer[0], length));
+        } else {
+            // create a new string that is large enough to contain the old one and the buffer
+            const u64 old_length = frame.registers[0]->string.length;
+            LIME_TRY(&frame.registers[1], lime_allocate(&frame, LimeStringValue, (length + old_length) * sizeof(u8)));
+            memcpy(&frame.registers[1]->string.bytes[0], &frame.registers[0]->string.bytes[0], old_length * sizeof(u8));
+            memcpy(&frame.registers[1]->string.bytes[old_length], &buffer[0], length * sizeof(u8));
+            frame.registers[1]->string.length = length + old_length;
+            frame.registers[0] = frame.registers[1];
+            frame.registers[1] = NULL;
+        }
+    } while (!stop);
+
+    LIME_STACK_PUSH_VALUE(&frame, frame.registers[0]);
 
     return NULL;
 }

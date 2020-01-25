@@ -14,4 +14,6 @@ LimeValue io_write(LimeStack stack);
 
 LimeValue io_print(LimeStack stack);
 
+LimeValue io_scan(LimeStack stack);
+
 #endif
