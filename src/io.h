@@ -1,19 +1,19 @@
 #ifndef IO_H
 #define IO_H
 
-#include <lime/api.h>
+#include <bowl/api.h>
 
 typedef struct {
     char *name;
-    LimeFunction function;
+    BowlFunction function;
 } IOFunctionEntry;
 
-LimeValue io_read(LimeStack stack);
+BowlValue io_read(BowlStack stack);
 
-LimeValue io_write(LimeStack stack);
+BowlValue io_write(BowlStack stack);
 
-LimeValue io_print(LimeStack stack);
+BowlValue io_print(BowlStack stack);
 
-LimeValue io_scan(LimeStack stack);
+BowlValue io_scan(BowlStack stack);
 
 #endif
