@@ -3,11 +3,6 @@
 
 #include <bowl/api.h>
 
-typedef struct {
-    char *name;
-    BowlFunction function;
-} IOFunctionEntry;
-
 BowlValue io_read(BowlStack stack);
 
 BowlValue io_write(BowlStack stack);

@@ -1,6 +1,6 @@
 #include "io.h"
 
-static IOFunctionEntry io_functions[] = {
+static BowlFunctionEntry io_functions[] = {
     { .name = "io:read", .function = io_read },
     { .name = "io:write", .function = io_write },
     { .name = "io:print", .function = io_print },
@@ -9,16 +9,7 @@ static IOFunctionEntry io_functions[] = {
 
 BowlValue bowl_module_initialize(BowlStack stack, BowlValue library) {
     BowlStackFrame frame = BOWL_ALLOCATE_STACK_FRAME(stack, library, NULL, NULL);
-
-    for (u64 i = 0; i < sizeof(io_functions) / sizeof(io_functions[0]); ++i) {
-        IOFunctionEntry *const entry = &io_functions[i];
-        const BowlValue exception = bowl_register_function(&frame, entry->name, frame.registers[0], entry->function);
-        if (exception != NULL) {
-            return exception;
-        }
-    }
-
-    return NULL;    
+    return bowl_register_all(&frame, frame.registers[0], io_functions, sizeof(io_functions) / sizeof(io_functions[0]));
 }
 
 BowlValue bowl_module_finalize(BowlStack stack, BowlValue library) {
