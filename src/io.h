@@ -2,6 +2,7 @@
 #define IO_H
 
 #include <bowl/api.h>
+#include <bowl/unicode.h>
 
 BowlValue io_read(BowlStack stack);
 
