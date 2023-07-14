@@ -155,12 +155,12 @@ BowlValue io_print(BowlStack stack) {
     return NULL;
 }
 
-// TODO: unicode support for scanning (at the moment 'false' new line characters may be recognized)
 BowlValue io_scan(BowlStack stack) {
     BowlStackFrame frame = BOWL_ALLOCATE_STACK_FRAME(stack, NULL, NULL, NULL);
     u64 capacity = 1024;
 
     BOWL_TRY(&frame.registers[0], bowl_allocate(&frame, BowlStringValue, capacity * sizeof(u32)));
+    frame.registers[0]->string.length = 0;
 
     do {
         // is there enough space to store the next codepoint?
