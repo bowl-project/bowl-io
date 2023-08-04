@@ -2,11 +2,7 @@
 #define IO_H
 
 #include <bowl/api.h>
-
-typedef struct {
-    char *name;
-    BowlFunction function;
-} IOFunctionEntry;
+#include <bowl/unicode.h>
 
 BowlValue io_read(BowlStack stack);
 
